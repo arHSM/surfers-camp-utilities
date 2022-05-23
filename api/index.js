@@ -54,7 +54,7 @@ module.exports = async (request, response) => {
         } else if (message.type === InteractionType.APPLICATION_COMMAND) {
             // Handle our Slash Commands
             switch (message.data.name.toLowerCase()) {
-                case SLAP_COMMAND.name.toLowerCase():
+                case HI_COMMAND.name.toLowerCase():
                     response.status(200).send({
                         type: 4,
                         data: {
