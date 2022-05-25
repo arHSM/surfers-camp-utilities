@@ -34,7 +34,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
                 type: InteractionResponseType.PONG,
             });
         } else {
-            handler(message, response);
+            console.log("Handling Interaction request");
+            response.status(200).send(await handler(message));
         }
     }
 };
