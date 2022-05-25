@@ -4,7 +4,7 @@ import fetch from "cross-fetch";
 const pronounsDropdown = {
     type: 4,
     data: {
-        content: `Select your pronouns
+        content: `Alright! Select your pronouns
 *Tip: Select & Submit again to remove them*`,
         flags: 64,
         components: [
