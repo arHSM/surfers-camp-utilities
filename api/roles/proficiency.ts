@@ -1,41 +1,38 @@
 export const proficiencyDropdown = {
-    type: 4,
-    data: {
-        content: `Alright! Select your proficiency
+    content: `Alright! Select your proficiency
 > *Tip: Select & Submit again to remove them,*\n> *choose **Surfing Types** next!*`,
-        flags: 64,
-        components: [
-            {
-                type: 1,
-                components: [
-                    {
-                        type: 3,
-                        custom_id: 'proficiency_dropdown',
-                        options: [
-                            {
-                                label: 'Beginner',
-                                value: 'beginner',
-                                description: 'Set Beginner as your proficiency',
-                            },
-                            {
-                                label: 'Intermediate',
-                                value: 'intermediate',
-                                description:
-                                    'Set Intermediate as your proficiency',
-                            },
-                            {
-                                label: 'Expert',
-                                value: 'expert',
-                                description: 'Set Expert as your proficiency',
-                            },
-                        ],
-                        placeholder: 'Choose your proficiency',
-                        min_values: 1,
-                    },
-                ],
-            },
-        ],
-    },
+    flags: 64,
+    components: [
+        {
+            type: 1,
+            components: [
+                {
+                    type: 3,
+                    custom_id: 'proficiency_dropdown',
+                    options: [
+                        {
+                            label: 'Beginner',
+                            value: 'beginner',
+                            description: 'Set Beginner as your proficiency',
+                        },
+                        {
+                            label: 'Intermediate',
+                            value: 'intermediate',
+                            description:
+                                'Set Intermediate as your proficiency',
+                        },
+                        {
+                            label: 'Expert',
+                            value: 'expert',
+                            description: 'Set Expert as your proficiency',
+                        },
+                    ],
+                    placeholder: 'Choose your proficiency',
+                    min_values: 1,
+                },
+            ],
+        },
+    ],
 }
 
 export const proficiencyRoleMap = {
@@ -45,5 +42,8 @@ export const proficiencyRoleMap = {
 }
 
 export const proficiencyMessage = (added: [string], removed: []): string => {
+    if (typeof added[0] === "undefined") {
+        return `**You have removed your proficiency!**`
+    }
     return `Your proficiency is now set to <@&${added[0]}>.`
 }

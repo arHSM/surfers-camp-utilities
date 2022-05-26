@@ -58,35 +58,26 @@ Pick surfing types and pronouns to let the community know more about you!`,
 
 async function modifyRoles(
     user: string,
-    data: [Array<string>, any, any, string],
+    data: [Array<string>, Array<string>, any, any, string],
 ) {
     let base = data[0]
-    let map = data[1]
-    let message = data[2]
+    let roles = data[1]
+    let map = data[2]
+    let message = data[3]
 
     base = base.map((role) => map[role])
 
+    console.log(`Member ${user} has roles: ${roles.join()}`)
     console.log(`Roles to work with: ${base.join()}`)
     console.log(`Roles Map: ${JSON.stringify(map)}`)
 
     let existing = []
     let to_remove = []
 
-    let member = await (
-        await fetch(
-            `https://discord.com/api/v10/guilds/${process.env.GUILD_ID}/members/${user}`,
-            {
-                headers: {
-                    Authorization: `Bot ${process.env.BOT_TOKEN}`,
-                },
-            },
-        )
-    ).json()
-
-    for (const role of member.roles) {
+    for (const role of roles) {
         if (
             base.includes(role) ||
-            (data[3] === 'pronoun_dropdown' &&
+            (data[4] === 'proficiency_dropdown' &&
                 Object.values(map).includes(role))
         ) {
             to_remove.push(role)
@@ -96,9 +87,9 @@ async function modifyRoles(
     }
 
     base = base.filter((role) => !to_remove.includes(role))
-    let roles = existing.concat(base)
+    roles = existing.concat(base)
 
-    console.log(`Patching roles (${roles}) for ${user}`)
+    console.log(`Patching roles [${roles}] for ${user}`)
 
     await fetch(
         `https://discord.com/api/v10/guilds/${process.env.GUILD_ID}/members/${user}`,
@@ -126,10 +117,10 @@ async function modifyRoles(
     }
 }
 
+const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+
 /**
  * Surfers Camp Utilities
- * @param {VercelRequest} request
- * @param {VercelResponse} response
  */
 export default async (request: VercelRequest, response: VercelResponse) => {
     if (request.method === 'POST') {
@@ -163,6 +154,16 @@ export default async (request: VercelRequest, response: VercelResponse) => {
                 switch (message.data.custom_id) {
                     case 'get_roles':
                         console.log('Sending roles prompt')
+
+                        // apparently the previous state persists for some
+                        // reason in vercel and because of that instead of
+                        // responding with a new message, it just edits
+                        // the main message, which is not good :/
+                        rolesPrompt.type = 4
+                        rolesPrompt.data.components[0].components[0].style = 1
+                        rolesPrompt.data.components[0].components[1].style = 2
+                        rolesPrompt.data.components[0].components[2].style = 2
+
                         return response.status(200).send(rolesPrompt)
                     case 'proficiency':
                         console.log('Sending proficiency dropdown')
@@ -171,41 +172,52 @@ export default async (request: VercelRequest, response: VercelResponse) => {
                         rolesPrompt.type = 7
                         rolesPrompt.data.components[0].components[0].style = 2
                         rolesPrompt.data.components[0].components[1].style = 1
-                        response.status(200).send(rolesPrompt)
 
                         // Send dropdown
-                        return await fetch(
-                            `https://discord.com/api/v10/webhooks/${process.env.APPLICATION_ID}/${message.token}`,
+                        fetch(
+                            `https://surfers-camp-utilities-arhsm.vercel.app/api/followup`,
                             {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    Authorization: `Bot ${process.env.BOT_TOKEN}`,
                                 },
-                                body: JSON.stringify(proficiencyDropdown),
+                                body: JSON.stringify({
+                                    token: message.token,
+                                    body: proficiencyDropdown
+                                }),
                             },
                         )
+
+                        await sleep(50)
+
+                        return response.status(200).send(rolesPrompt)
                     case 'surfing_types':
                         console.log('Sending surfing type dropdown')
 
                         // Edit buttons
                         rolesPrompt.type = 7
+                        rolesPrompt.data.components[0].components[0].style = 2
                         rolesPrompt.data.components[0].components[1].style = 2
                         rolesPrompt.data.components[0].components[2].style = 1
-                        response.status(200).send(rolesPrompt)
 
                         // Send dropdown
-                        return await fetch(
-                            `https://discord.com/api/v10/webhooks/${process.env.APPLICATION_ID}/${message.token}`,
+                        fetch(
+                            `https://surfers-camp-utilities-arhsm.vercel.app/api/followup`,
                             {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    Authorization: `Bot ${process.env.BOT_TOKEN}`,
                                 },
-                                body: JSON.stringify(surfingTypesDropdown),
+                                body: JSON.stringify({
+                                    token: message.token,
+                                    body: surfingTypesDropdown
+                                }),
                             },
                         )
+
+                        await sleep(50)
+
+                        return response.status(200).send(rolesPrompt)
                     case 'pronouns':
                         console.log('Sending pronouns dropdown')
 
@@ -213,51 +225,63 @@ export default async (request: VercelRequest, response: VercelResponse) => {
                         rolesPrompt.type = 7
                         rolesPrompt.data.components[0].components[0].style = 1
                         rolesPrompt.data.components[0].components[1].style = 1
-                        response.status(200).send(rolesPrompt)
+                        rolesPrompt.data.components[0].components[2].style = 1
 
                         // Send dropdown
-                        return await fetch(
-                            `https://discord.com/api/v10/webhooks/${process.env.APPLICATION_ID}/${message.token}`,
+                        fetch(
+                            `https://surfers-camp-utilities-arhsm.vercel.app/api/followup`,
                             {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    Authorization: `Bot ${process.env.BOT_TOKEN}`,
                                 },
-                                body: JSON.stringify(pronounsDropdown),
+                                body: JSON.stringify({
+                                    token: message.token,
+                                    body: pronounsDropdown
+                                }),
                             },
                         )
+
+                        await sleep(50)
+
+                        return response.status(200).send(rolesPrompt)
                 }
             } else if (message.data.component_type === 3) {
                 switch (message.data.custom_id) {
                     case 'proficiency_dropdown':
+                        console.log(`Setting ${message.member.user.id}'s proficiency`)
                         return response
                             .status(200)
                             .send(
-                                await modifyRoles(message.member.user_id, [
+                                await modifyRoles(message.member.user.id, [
                                     message.data.values,
+                                    message.member.roles,
                                     proficiencyRoleMap,
                                     proficiencyMessage,
                                     'proficiency_dropdown',
                                 ]),
                             )
                     case 'surfing_types_dropdown':
+                        console.log(`Adding/Removing ${message.member.user.id}'s surfing types`)
                         return response
                             .status(200)
                             .send(
-                                await modifyRoles(message.member.user_id, [
+                                await modifyRoles(message.member.user.id, [
                                     message.data.values,
+                                    message.member.roles,
                                     surfingTypesRoleMap,
                                     surfingTypesMessage,
                                     'surfing_types_dropdown',
                                 ]),
                             )
                     case 'pronoun_dropdown':
+                        console.log(`Adding/Removing ${message.member.user.id}'s pronouns`)
                         return response
                             .status(200)
                             .send(
-                                await modifyRoles(message.member.user_id, [
+                                await modifyRoles(message.member.user.id, [
                                     message.data.values,
+                                    message.member.roles,
                                     pronounRoleMap,
                                     pronounMessage,
                                     'pronoun_dropdown',
