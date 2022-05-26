@@ -223,9 +223,9 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
                         // Edit buttons
                         rolesPrompt.type = 7
-                        rolesPrompt.data.components[0].components[0].style = 2
-                        rolesPrompt.data.components[0].components[1].style = 2
-                        rolesPrompt.data.components[0].components[2].style = 2
+                        rolesPrompt.data.components[0].components[0].style = 3
+                        rolesPrompt.data.components[0].components[1].style = 3
+                        rolesPrompt.data.components[0].components[2].style = 3
 
                         // Send dropdown
                         fetch(
