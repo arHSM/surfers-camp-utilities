@@ -15,8 +15,8 @@ export const pronounsDropdown = {
                             value: 'he_him',
                             description: 'Add He / Him to your pronouns',
                             emoji: {
-                                name: 'hehim',
-                                id: '977171648941817946',
+                                name: 'HeHim',
+                                id: '978265614479163443',
                             },
                         },
                         {
@@ -24,8 +24,8 @@ export const pronounsDropdown = {
                             value: 'she_her',
                             description: 'Add She / Her to your pronouns',
                             emoji: {
-                                name: 'sheher',
-                                id: '977171648748859392',
+                                name: 'SheHer',
+                                id: '978265614340739103',
                             },
                         },
                         {
@@ -33,8 +33,8 @@ export const pronounsDropdown = {
                             value: 'they_them',
                             description: 'Add They / Them to your pronouns',
                             emoji: {
-                                name: 'theythem',
-                                id: '977171648492998699',
+                                name: 'TheyThem',
+                                id: '978265614621745163',
                             },
                         },
                         {
@@ -43,8 +43,8 @@ export const pronounsDropdown = {
                             description:
                                 'Add Ask Pronouns to your pronouns',
                             emoji: {
-                                name: 'ask',
-                                id: '977271207021924402',
+                                name: 'AskPronouns',
+                                id: '978265614579798016',
                             },
                         },
                         {
@@ -53,8 +53,8 @@ export const pronounsDropdown = {
                             description:
                                 'Add Any Pronouns to your pronouns',
                             emoji: {
-                                name: 'any',
-                                id: '977271206971596841',
+                                name: 'AnyPronouns',
+                                id: '978265614609166406',
                             },
                         },
                     ],
