@@ -1,6 +1,6 @@
 export const pronounsDropdown = {
     content: `Alright! Select your pronouns
-> *Tip: You're done! go ahead and introduce yourself in <#${process.env.INTRODUCTION_CHANNEL}>*`,
+> *Tip: **You're done!** go ahead and introduce yourself in <#${process.env.INTRODUCTION_CHANNEL}>*`,
     flags: 64,
     components: [
         {
