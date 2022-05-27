@@ -149,7 +149,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
             return response.status(200).send({
                 type: InteractionResponseType.PONG,
             })
-        } else if (message.type = InteractionType.APPLICATION_COMMAND) {
+        } else if (message.type === InteractionType.APPLICATION_COMMAND) {
+            console.log("Handling slash commmand interaction request")
             if (message.data.name !== "role_prompt") return response.status(400).send({ error: 'Unknown command' })
             console.log(`Got role_prompt command
 User ID: ${message.member.user.id}
@@ -192,6 +193,7 @@ Owners list: ${process.env.OWNERS}`)
                 },
             });
         } else if (message.type === InteractionType.MESSAGE_COMPONENT) {
+            console.log("Handling message component interaction request")
             if (message.data.component_type === 2) {
                 switch (message.data.custom_id) {
                     case 'get_roles':
