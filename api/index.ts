@@ -149,6 +149,44 @@ export default async (request: VercelRequest, response: VercelResponse) => {
             return response.status(200).send({
                 type: InteractionResponseType.PONG,
             })
+        } else if (message.type = InteractionType.APPLICATION_COMMAND) {
+            if (message.data.name !== "role_prompt") return response.status(400).send({ error: 'Unknown command' })
+            if (!(message.data.user.id in JSON.parse(process.env.OWNERS))) return response.status(200).send({ type: 4, data: { content: 'You do not have the correct perms to execute this command', flags: 64, }, })
+
+            await fetch(`https://discord.com/api/v10/channels/${process.env.PROMPT_CHANNEL}/messages`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bot ${process.env.BOT_TOKEN}`,
+                },
+                body: JSON.stringify({
+                    content: "Get your roles here!",
+                    components: [
+                        {
+                            type: 1,
+                            components: [
+                                {
+                                    type: 2,
+                                    style: 3,
+                                    label: "Get Roles!",
+                                    custom_id: "get_roles",
+                                    emoji: {
+                                        id: null,
+                                        name: "🙌"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }),
+            })
+            response.status(200).send({
+                type: 4,
+                data: {
+                    content: "Sent!",
+                    flags: 64,
+                },
+            });
         } else if (message.type === InteractionType.MESSAGE_COMPONENT) {
             if (message.data.component_type === 2) {
                 switch (message.data.custom_id) {
@@ -293,5 +331,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
         }
     }
 
-    return response.status(405).send('Method not allowed')
+    return response.status(405).send({
+        error: 'Method not allowed'
+    })
 }
