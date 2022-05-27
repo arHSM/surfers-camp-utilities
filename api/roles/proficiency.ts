@@ -14,17 +14,29 @@ export const proficiencyDropdown = {
                             label: 'Beginner',
                             value: 'beginner',
                             description: 'Set Beginner as your proficiency',
+                            emoji: {
+                                name: 'Beginner',
+                                id: '979703570863632467',
+                            },
                         },
                         {
                             label: 'Intermediate',
                             value: 'intermediate',
                             description:
                                 'Set Intermediate as your proficiency',
+                            emoji: {
+                                name: 'Intermediate',
+                                id: '979703571077533728'
+                            },
                         },
                         {
                             label: 'Expert',
                             value: 'expert',
                             description: 'Set Expert as your proficiency',
+                            emoji: {
+                                name: 'Master',
+                                id: '979703571954159666',
+                            },
                         },
                     ],
                     placeholder: 'Choose your proficiency',
