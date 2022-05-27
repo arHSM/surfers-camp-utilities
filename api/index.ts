@@ -151,7 +151,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
             })
         } else if (message.type = InteractionType.APPLICATION_COMMAND) {
             if (message.data.name !== "role_prompt") return response.status(400).send({ error: 'Unknown command' })
-            if (!(message.data.user.id in JSON.parse(process.env.OWNERS))) return response.status(200).send({ type: 4, data: { content: 'You do not have the correct perms to execute this command', flags: 64, }, })
+            if (!(message.member.user.id in JSON.parse(process.env.OWNERS))) return response.status(200).send({ type: 4, data: { content: 'You do not have the correct perms to execute this command', flags: 64, }, })
 
             await fetch(`https://discord.com/api/v10/channels/${process.env.PROMPT_CHANNEL}/messages`, {
                 method: "POST",
