@@ -172,7 +172,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
                         rolesPrompt.type = 7
                         rolesPrompt.data.components[0].components[0].style = 2
                         rolesPrompt.data.components[0].components[1].style = 1
-                        rolesPrompt.data.components[0].components[2].style = 1
+                        rolesPrompt.data.components[0].components[2].style = 2
 
                         // Send dropdown
                         fetch(
