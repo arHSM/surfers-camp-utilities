@@ -1,6 +1,6 @@
 export const proficiencyDropdown = {
-    content: `Alright! Select your proficiency
-> *Tip: Select & Submit again to remove them,*\n> *choose **Surfing Types** next!*`,
+    content: `Alright! Select your **Proficiency**
+> *Tip: Select & Submit again to remove them. If you don't know how to surf, select **Beginner***\n> *choose **Surfing Types** next!*`,
     flags: 64,
     components: [
         {
