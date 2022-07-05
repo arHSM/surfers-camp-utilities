@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from asyncio import sleep
+from asyncio import create_task, sleep
+from datetime import datetime
 from typing import TYPE_CHECKING
 from os import getenv
 
@@ -16,6 +17,9 @@ EXPERT = getenv("EXPERT", "")
 WELCOME_CHANNEL = getenv("WELCOME_CHANNEL", "")
 BOT_ID = getenv("BOT_ID", "")
 
+ACKD = []
+TSK = {}
+
 
 class Member(Extension):
     def __init__(self, client: Client):
@@ -24,10 +28,7 @@ class Member(Extension):
         self.client.event(self.on_guild_member_update)  # type: ignore
 
     @staticmethod
-    async def on_guild_member_add(member: GuildMember) -> None:
-        assert member._client is not None
-        assert member.user is not None
-
+    async def _internal_staff_only(member: GuildMember) -> None:
         client = member._client
         guild_id = int(member.guild_id)
         user = int(member.user.id)
@@ -41,7 +42,7 @@ class Member(Extension):
 
         # Give beginner if has role(s) but not one which is a
         # proficiency role
-        if len(roles) > 0 and (
+        if (
             (BEGINNER not in roles)
             or (INTERMEDIATE not in roles)
             or (EXPERT not in roles)
@@ -74,7 +75,20 @@ class Member(Extension):
             )
             print(f"Kicked {user} for not selecting any role in under an hour")
 
+        if TSK.get(str(member.user.id)):
+            del TSK[str(member.user.id)]
+
         return None
+
+    @staticmethod
+    async def on_guild_member_add(member: GuildMember) -> None:
+        assert member._client is not None
+        assert member.user is not None
+
+        fut = create_task(Member._internal_staff_only(member))
+
+        TSK[str(member.user.id)] = fut
+        return await fut
 
     @staticmethod
     async def on_guild_member_update(member: GuildMember):
@@ -85,17 +99,26 @@ class Member(Extension):
         if str(member.user.id) == BOT_ID:
             return
 
+        if datetime.now().min - member.joined_at.min >= 10:
+            return
+
         if (
             (BEGINNER in member.roles)
             or (INTERMEDIATE in member.roles)
             or (EXPERT in member.roles)
         ):
+            if TSK.get(str(member.user.id)):
+                del TSK[str(member.user.id)]
+
             await member._client.send_message(
                 int(WELCOME_CHANNEL),
                 f"Welcome to Surfers Camp <@!{member.user.id}>",
                 allowed_mentions={"parse": []},
             )
             print(f"Sent welcome message for member {member.user.id}")
+            ACKD.append(str(member.user.id))
+            sleep(20 * 60)
+            ACKD.remove(str(member.user.id))
 
 
 def setup(client: Client):
