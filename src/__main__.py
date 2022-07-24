@@ -1,14 +1,11 @@
-from dotenv import load_dotenv
-from os import getenv
+from dotenv import dotenv_values
 from interactions import Client, ClientPresence, Intents, PresenceActivity
 
-# from logging import basicConfig
+from logging import basicConfig
 
-# basicConfig(level=10)
+basicConfig(level=10)
 
-load_dotenv()
-
-TOKEN = getenv("TOKEN", "")
+(TOKEN,) = dotenv_values(".env").values()
 
 bot = Client(
     token=TOKEN,

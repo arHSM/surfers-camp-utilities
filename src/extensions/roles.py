@@ -1,37 +1,53 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from os import getenv
 
-from interactions import ActionRow, Button, Emoji, SelectMenu, SelectOption
+from interactions import Button, Emoji, SelectMenu, SelectOption
+
+from extensions.utils import create_buttons, role_diff
+
+from .constants import (
+    ANY,
+    ANY_EMOJI,
+    ASK,
+    ASK_EMOJI,
+    BEGINNER,
+    BEGINNER_EMOJI,
+    EXPERT,
+    EXPERT_EMOJI,
+    GUILD_ID,
+    HE_HIM,
+    HE_HIM_EMOJI,
+    INTERMEDIATE,
+    INTERMEDIATE_EMOJI,
+    INTRODUCTION_CHANNEL,
+    KITEBOARD,
+    KITEBOARD_EMOJI,
+    LONGBOARD,
+    LONGBOARD_EMOJI,
+    SHE_HER,
+    SHE_HER_EMOJI,
+    SHORTBOARD,
+    SHORTBOARD_EMOJI,
+    SKIMBOARD,
+    SKIMBOARD_EMOJI,
+    THEY_THEM,
+    THEY_THEM_EMOJI,
+    WAKEBOARD,
+    WAKEBOARD_EMOJI,
+    WELCOME_CHANNEL,
+    WINDBOARD,
+    WINDBOARD_EMOJI,
+)
 
 if TYPE_CHECKING:
     from interactions import Client, ComponentContext
-
-
-GUILD_ID = getenv("GUILD_ID", "")
-INTRODUCTION_CHANNEL = getenv("INTRODUCTION_CHANNEL", "")
-
-BEGINNER = int(getenv("BEGINNER", ""))
-INTERMEDIATE = int(getenv("INTERMEDIATE", ""))
-EXPERT = int(getenv("EXPERT", ""))
 
 PROFICIENCY_MAP = {
     "beginner": BEGINNER,
     "intermediate": INTERMEDIATE,
     "expert": EXPERT,
 }
-
-BEGINNER_EMOJI = getenv("BEGINNER_EMOJI", "")
-INTERMEDIATE_EMOJI = getenv("INTERMEDIATE_EMOJI", "")
-EXPERT_EMOJI = getenv("EXPERT_EMOJI", "")
-
-LONGBOARD = int(getenv("LONGBOARD", ""))
-SHORTBOARD = int(getenv("SHORTBOARD", ""))
-SKIMBOARD = int(getenv("SKIMBOARD", ""))
-WAKEBOARD = int(getenv("WAKEBOARD", ""))
-KITEBOARD = int(getenv("KITEBOARD", ""))
-WINDBOARD = int(getenv("WINDBOARD", ""))
 
 SURFING_TYPES_MAP = {
     "longboard": LONGBOARD,
@@ -42,20 +58,6 @@ SURFING_TYPES_MAP = {
     "windboard": WINDBOARD,
 }
 
-LONGBOARD_EMOJI = getenv("LONGBOARD_EMOJI", "")
-SHORTBOARD_EMOJI = getenv("SHORTBOARD_EMOJI", "")
-SKIMBOARD_EMOJI = getenv("SKIMBOARD_EMOJI", "")
-WAKEBOARD_EMOJI = getenv("WAKEBOARD_EMOJI", "")
-KITEBOARD_EMOJI = getenv("KITEBOARD_EMOJI", "")
-WINDBOARD_EMOJI = getenv("WINDBOARD_EMOJI", "")
-
-
-HE_HIM = int(getenv("HE_HIM", ""))
-SHE_HER = int(getenv("SHE_HER", ""))
-THEY_THEM = int(getenv("THEY_THEM", ""))
-ASK = int(getenv("ASK", ""))
-ANY = int(getenv("ANY", ""))
-
 PRONOUNS_MAP = {
     "he_him": HE_HIM,
     "she_her": SHE_HER,
@@ -64,51 +66,35 @@ PRONOUNS_MAP = {
     "any_pronouns": ANY,
 }
 
-HE_HIM_EMOJI = getenv("HE_HIM_EMOJI", "")
-SHE_HER_EMOJI = getenv("SHE_HER_EMOJI", "")
-THEY_THEM_EMOJI = getenv("THEY_THEM_EMOJI", "")
-ASK_EMOJI = getenv("ASK_EMOJI", "")
-ANY_EMOJI = getenv("ANY_EMOJI", "")
-
 
 class Role:
     def __init__(self, client: Client):
         self.client = client
 
         # Main role prompt
-        self.client.component("get_roles")(self.send_role_prompt)
+        self.client.component("get_roles")(self.send_role_prompt)  # type: ignore
 
         # Role *types*
-        self.client.component("proficiency")(self.send_proficiency)
-        self.client.component("surfing_types")(self.send_surfing_types)
-        self.client.component("pronouns")(self.send_pronouns)
+        self.client.component("proficiency")(self.send_proficiency)  # type: ignore
+        self.client.component("surfing_types")(self.send_surfing_types)  # type: ignore
+        self.client.component("pronouns")(self.send_pronouns)  # type: ignore
 
         # Edit callbacks
-        self.client.component("proficiency_dropdown")(self.edit_proficiency)
-        self.client.component("surfing_types_dropdown")(self.edit_surfing_types)
-        self.client.component("pronouns_dropdown")(self.edit_pronouns)
+        self.client.component("proficiency_dropdown")(self.edit_proficiency)  # type: ignore
+        self.client.component("surfing_types_dropdown")(self.edit_surfing_types)  # type: ignore
+        self.client.component("pronouns_dropdown")(self.edit_pronouns)  # type: ignore
 
     @staticmethod
     async def send_role_prompt(ctx: ComponentContext) -> None:
         await ctx.send(
             content="Pick your **Proficiency** in order to access the community.\nPick surfing types and pronouns to let the community know more about you!",
             ephemeral=True,
-            components=[
-                Button(style=1, label="Proficiency", custom_id="proficiency"),
-                Button(style=2, label="Surfing Types", custom_id="surfing_types"),
-                Button(style=2, label="Pronouns", custom_id="pronouns"),
-            ],
+            components=create_buttons(1),
         )
 
     @staticmethod
     async def send_proficiency(ctx: ComponentContext):
-        await ctx.edit(
-            components=[
-                Button(style=2, label="Proficiency", custom_id="proficiency"),
-                Button(style=1, label="Surfing Types", custom_id="surfing_types"),
-                Button(style=2, label="Pronouns", custom_id="pronouns"),
-            ],
-        )
+        await ctx.edit(components=create_buttons(2))
         await ctx.send(
             content="""Alright! Select your **Proficiency**
 > *Tip: Click again to remove them. If you don't know how to surf, select **Beginner***
@@ -144,11 +130,7 @@ class Role:
     @staticmethod
     async def send_surfing_types(ctx: ComponentContext):
         await ctx.edit(
-            components=[
-                Button(style=2, label="Proficiency", custom_id="proficiency"),
-                Button(style=2, label="Surfing Types", custom_id="surfing_types"),
-                Button(style=1, label="Pronouns", custom_id="pronouns"),
-            ],
+            components=create_buttons(3),
         )
         await ctx.send(
             content="""Alright! Select your **Surfing Types**
@@ -203,11 +185,7 @@ class Role:
     @staticmethod
     async def send_pronouns(ctx: ComponentContext):
         await ctx.edit(
-            components=[
-                Button(style=3, label="Proficiency", custom_id="proficiency"),
-                Button(style=3, label="Surfing Types", custom_id="surfing_types"),
-                Button(style=3, label="Pronouns", custom_id="pronouns"),
-            ],
+            components=create_buttons(-1),
         )
         await ctx.send(
             content=f"""Alright! Select your **Pronouns**
@@ -257,85 +235,71 @@ class Role:
     async def edit_proficiency(ctx: ComponentContext, values: list[str]):
         roles = ctx.member.roles.copy()
         to_add = PROFICIENCY_MAP[values[0]]
+        had_proficiency = False
 
         if to_add in roles:
-            ctx.send(
+            await ctx.send(
                 "You will **lose access** to the server if you remove your proficiency!"
             )
             return None
 
         try:
-            roles.remove(PROFICIENCY_MAP["beginner"])
+            roles.remove(BEGINNER)
         except ValueError:
             try:
-                roles.remove(PROFICIENCY_MAP["intermediate"])
+                roles.remove(INTERMEDIATE)
             except ValueError:
-                roles.remove(PROFICIENCY_MAP["expert"])
+                roles.remove(EXPERT)
+            else:
+                had_proficiency = True
+        else:
+            had_proficiency = True
 
         roles.append(to_add)
 
-        ctx.member.modify(GUILD_ID, roles=roles)
+        await ctx.member.modify(GUILD_ID, roles=roles, reason="Selected by user")
 
-        ctx.send(
+        await ctx.send(
             content=f"Your proficiency is now set to <@&{to_add}>",
-            allowed_mentions={"parse": []},
+            allowed_mentions={"parse": []},  # type: ignore
+            ephemeral=True,
         )
+
+        if not had_proficiency:
+            await ctx.client.send_message(
+                WELCOME_CHANNEL,
+                f"Welcome to Surfers Camp {ctx.member.mention}",
+                allowed_mentions={"parse": []},
+            )
 
     @staticmethod
     async def edit_surfing_types(ctx: ComponentContext, values: list[str]):
-        original = ctx.member.roles.copy()
-        to_add = list(map(lambda r: SURFING_TYPES_MAP[r], values))
-        removed = []
-        roles = []
-        for role in original:
-            if role in {
-                LONGBOARD,
-                SHORTBOARD,
-                SKIMBOARD,
-                WAKEBOARD,
-                KITEBOARD,
-                WINDBOARD,
-            }:
-                if role in to_add:
-                    to_add.remove(role)
-                    removed.append(role)
-                    continue
-            roles.append(role)
-        roles.extend(to_add)
-        ctx.member.modify(roles=roles)
+        (roles, added, removed) = role_diff(
+            ctx.member.roles, list(map(lambda r: SURFING_TYPES_MAP[r], values))
+        )
 
-        ctx.send(
-            f"""{"Added:" + " ".join(map(lambda r: f"<@&{r}>",to_add)) + " to your surfing types." if len(to_add) > 0 else ""}
-{"Removed:" + " ".join(map(lambda r: f"<@&{r}>",removed)) + " from your surfing types." if len(to_add) > 0 else ""}""".strip(),
-            allowed_mentions={"parse": []},
+        await ctx.member.modify(GUILD_ID, roles=roles, reason="Selected by user")
+
+        await ctx.send(
+            f"""{"Added:" + " ".join(map(lambda r: f"<@&{r}>", removed)) + " to your surfing types." if len(removed) > 0 else ""}
+{"Removed:" + " ".join(map(lambda r: f"<@&{r}>",removed)) + " from your surfing types." if len(removed) > 0 else ""}""".strip(),
+            allowed_mentions={"parse": []},  # type: ignore
+            ephemeral=True,
         )
 
     @staticmethod
     async def edit_pronouns(ctx: ComponentContext, values: list[str]):
-        original = ctx.member.roles.copy()
-        to_add = list(map(lambda r: PRONOUNS_MAP[r], values))
-        removed = []
-        roles = []
-        for role in original:
-            if role in {
-                HE_HIM,
-                SHE_HER,
-                THEY_THEM,
-                ASK,
-                ANY,
-            }:
-                if role in to_add:
-                    to_add.remove(role)
-                    removed.append(role)
-                    continue
-            roles.append(role)
-        roles.extend(to_add)
-        ctx.member.modify(roles=roles)
+        (roles, added, removed) = role_diff(
+            ctx.member.roles, list(map(lambda r: PRONOUNS_MAP[r], values))
+        )
 
-        ctx.send(
-            f"""{"Added:" + " ".join(map(lambda r: f"<@&{r}>",to_add)) + " to your pronouns." if len(to_add) > 0 else ""}
-{"Removed:" + " ".join(map(lambda r: f"<@&{r}>",removed)) + " from your pronouns." if len(to_add) > 0 else ""}""".strip(),
-            allowed_mentions={"parse": []},
+        await ctx.member.modify(GUILD_ID, roles=roles, reason="Selected by user")
+
+        await ctx.send(
+            f"""{"Added:" + " ".join(map(lambda r: f"<@&{r}>", added)) + " to your pronouns." if len(added) > 0 else ""}
+{"Removed:" + " ".join(map(lambda r: f"<@&{r}>",removed)) + " from your pronouns." if len(removed) > 0 else ""}""".strip(),
+            allowed_mentions={"parse": []},  # type: ignore
+            ephemeral=True,
         )
 
 
