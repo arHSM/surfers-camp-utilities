@@ -239,7 +239,8 @@ class Role:
 
         if to_add in roles:
             await ctx.send(
-                "You will **lose access** to the server if you remove your proficiency!"
+                "You will **lose access** to the server if you remove your proficiency!",
+                ephemeral=True,
             )
             return None
 
